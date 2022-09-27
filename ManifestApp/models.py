@@ -4,7 +4,7 @@ from django.db import models
 class NodeData(models.Model):
     VSN = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
-    # tags = models.CharField(max_length=30)
+    tags = models.ManyToManyField("Tag")
     gps_lat = models.FloatField()
     gps_lan = models.FloatField()
 
