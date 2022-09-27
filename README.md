@@ -1,5 +1,21 @@
 # Beekeeper Manifest
 
+## Docker-compose
+Start backend services (db + api):
+```
+docker-compose up --build
+```
+Make Django migrations:
+```
+docker exec -it manifest-api python manage.py migrate
+```
+Create superuser to login to `/admin/` page:
+```
+docker exec -it manifest-api python manage.py createsuperuser
+```
+The last command will prompt you for the admin username and password.
+
+## Setup Django Applicatin
 The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
 
 * If you don't have a MySQL server on your computer yet, please follow the [official documentation](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing) to install.
