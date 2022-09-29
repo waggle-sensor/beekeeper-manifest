@@ -1,14 +1,21 @@
 # Beekeeper Manifest
 
 ## Docker-compose
+Make a copy of the `.env.example` environment variables and modify to your needs:
+```
+cp .env.example .env
+``
+
 Start backend services (db + api):
 ```
 docker-compose up --build
 ```
+
 Make Django migrations:
 ```
 docker exec -it manifest-api python manage.py migrate
 ```
+
 Create superuser to login to `/admin/` page:
 ```
 docker exec -it manifest-api python manage.py createsuperuser
