@@ -15,7 +15,7 @@ mysql -u root -p
 CREATE DATABASE manifest_db;
 USE manifest_db;
 ```
-* Tp link this Django project with your MySQL server, go to `DjangoManifest/settings.py`, replace the section `DATABASES` with your database information.
+* To link this Django project with your MySQL server, go to `DjangoManifest/settings.py`, replace the section `DATABASES` with your database information.
 
 ```
 DATABASES = {
