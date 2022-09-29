@@ -22,3 +22,5 @@ class NodeMetaData(admin.ModelAdmin):
 admin.site.register(NodeData, NodeMetaData)
 admin.site.register(Label)
 admin.site.register(Tag)
+admin.site.register(Hardware)
+admin.site.register(Capability)

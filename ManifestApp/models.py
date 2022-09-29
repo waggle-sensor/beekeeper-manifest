@@ -1,7 +1,9 @@
+from secrets import choice
 from django.db import models
 
 # Create your models here.
 class NodeData(models.Model):
+
     VSN = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
@@ -11,15 +13,44 @@ class NodeData(models.Model):
     def __str__(self):
          return self.VSN
 
-class Compute(models.Model):
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
+
+class Hardware(models.Model):
+
     cname = models.CharField(max_length=30)
+    hw_model = models.CharField(max_length=30)
+    hw_version = models.CharField(max_length=30)
+    sw_version = models.CharField(max_length=30)
+    datasheet = models.CharField(max_length=30)
+    cpu = models.CharField(max_length=30)
+    cpu_ram = models.CharField(max_length=30)
+    gpu_ram = models.CharField(max_length=30)
+    shared_ram = models.CharField(max_length=30)
+    capabilities = models.ManyToManyField("Capability")
+
+    def __str__(self):
+         return self.cname
+
+class Capability(models.Model):
+
+    capability = models.CharField(max_length=30)
+
+
+class Compute(models.Model):
+
+    ZONE_CHOICES = (
+    ('core','core'),
+    ('detector', 'detector'),
+)
+
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30)
     hardware_id = models.CharField(max_length=30)
-    zone = models.CharField(max_length=30) # single value & drop down
+    zone = models.CharField(max_length=30, choices=ZONE_CHOICES) # single value & drop down
 
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
+
 
 class Sensor(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
@@ -30,6 +61,7 @@ class Sensor(models.Model):
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
 
+
 class Resource(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
@@ -37,6 +69,7 @@ class Resource(models.Model):
 
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
+
 
 class Tag(models.Model):
     tag = models.CharField(max_length=30) #forest, mountain, mobile
