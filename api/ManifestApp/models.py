@@ -34,19 +34,23 @@ class Capability(models.Model):
 
     capability = models.CharField(max_length=30)
 
+    def __str__(self):
+         return self.capability
+
 
 class Compute(models.Model):
 
     ZONE_CHOICES = (
     ('core','core'),
     ('detector', 'detector'),
+    ('zone', 'zone')
 )
 
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
-    hardware_id = models.CharField(max_length=30)
-    zone = models.CharField(max_length=30, choices=ZONE_CHOICES) # single value & drop down
+    name = models.CharField(max_length=30, default='')
+    serial_no = models.CharField(max_length=30, default='')
+    zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
 
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
@@ -54,8 +58,8 @@ class Compute(models.Model):
 
 class Sensor(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    cname = models.CharField(max_length=30)
     labels = models.ManyToManyField("Label")
 
     def __str__(self):
@@ -64,8 +68,8 @@ class Sensor(models.Model):
 
 class Resource(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    cname = models.CharField(max_length=30)
 
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
