@@ -4,7 +4,7 @@
 Make a copy of the `.env.example` environment variables and modify to your needs:
 ```
 cp .env.example .env
-``
+```
 
 Start backend services (db + api):
 ```
