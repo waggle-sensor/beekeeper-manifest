@@ -1,35 +1,38 @@
-from secrets import choice
 from django.db import models
 
+
 # Create your models here.
+
+# NodeData
 class NodeData(models.Model):
 
-    VSN = models.CharField(max_length=30)
+    VSN = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
-    gps_lat = models.FloatField() # may be optional
-    gps_lan = models.FloatField() # may be optional
+    gps_lat = models.FloatField(blank=True)
+    gps_lan = models.FloatField(blank=True)
 
     def __str__(self):
          return self.VSN
 
-
+# Hardware
 class Hardware(models.Model):
 
     cname = models.CharField(max_length=30)
-    hw_model = models.CharField(max_length=30)
-    hw_version = models.CharField(max_length=30)
-    sw_version = models.CharField(max_length=30)
-    datasheet = models.CharField(max_length=30)
-    cpu = models.CharField(max_length=30)
-    cpu_ram = models.CharField(max_length=30)
-    gpu_ram = models.CharField(max_length=30)
-    shared_ram = models.CharField(max_length=30)
-    capabilities = models.ManyToManyField("Capability")
+    hw_model = models.CharField(max_length=30, blank=True)
+    hw_version = models.CharField(max_length=30, blank=True)
+    sw_version = models.CharField(max_length=30, blank=True)
+    datasheet = models.CharField(max_length=30, default='<url>', blank=True)
+    cpu = models.CharField(max_length=30, blank=True)
+    cpu_ram = models.CharField(max_length=30, blank=True)
+    gpu_ram = models.CharField(max_length=30, blank=True)
+    shared_ram = models.BooleanField(default=False, blank=True)
+    capabilities = models.ManyToManyField("Capability", blank=True)
 
     def __str__(self):
          return self.cname
 
+# Capability
 class Capability(models.Model):
 
     capability = models.CharField(max_length=30)
@@ -37,35 +40,41 @@ class Capability(models.Model):
     def __str__(self):
          return self.capability
 
-
+# Compute
 class Compute(models.Model):
 
     ZONE_CHOICES = (
-    ('core','core'),
-    ('detector', 'detector'),
-    ('zone', 'zone')
-)
+        ('core','core'),
+        ('detector', 'detector'),
+        ('zone', 'zone')
+    )
 
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    node = models.ForeignKey(NodeData, related_name='computes', on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30, default='')
-    serial_no = models.CharField(max_length=30, default='')
+    serial_no = models.CharField(max_length=30, default='<MAC ADDRESS>')
     zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
 
+    class Meta:
+        unique_together = ['node', 'cname']
+
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
 
-
+# Sensor
 class Sensor(models.Model):
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    node = models.ForeignKey(NodeData, related_name='sensors', on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
-    labels = models.ManyToManyField("Label")
+    labels = models.ManyToManyField("Label", blank=True)
+
+    class Meta:
+        unique_together = ['node', 'cname']
 
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
 
-
+# Resource
 class Resource(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
@@ -74,14 +83,14 @@ class Resource(models.Model):
     def __str__(self):
         return "%s - %s" % (self.node, self.name)
 
-
+# Tag
 class Tag(models.Model):
-    tag = models.CharField(max_length=30) #forest, mountain, mobile
+    tag = models.CharField(max_length=30, unique="True") #forest, mountain, mobile
 
     def __str__(self):
         return self.tag
 
-
+# Label
 class Label(models.Model):
     label = models.CharField(max_length=30)
 
