@@ -24,6 +24,17 @@ class ResourceInline(admin.StackedInline):
 class NodeMetaData(admin.ModelAdmin):
     actions = [export_as_json]
 
+    # display in admin panel
+    list_display = ('VSN', 'name', 'gps_lat', 'gps_lan', 'get_tags', 'get_computes')
+
+    @admin.display(description='Tags')
+    def get_tags(self, obj):
+        return ", ".join([t.tag for t in obj.tags.all()])
+
+    @admin.display(description='Computes')
+    def get_computes(self, obj):
+        return ", ".join([c.cname for c in obj.compute.all()])
+
     inlines = [
         ComputeInline,
         SensorInline,

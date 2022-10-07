@@ -9,6 +9,7 @@ class NodeData(models.Model):
     VSN = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
+    compute = models.ManyToManyField("Hardware", through="Compute")
     gps_lat = models.FloatField(blank=True)
     gps_lan = models.FloatField(blank=True)
 
@@ -59,7 +60,7 @@ class Compute(models.Model):
         unique_together = ['node', 'cname']
 
     def __str__(self):
-        return "%s - %s" % (self.node, self.name)
+        return self.name
 
 # Sensor
 class Sensor(models.Model):
@@ -72,7 +73,7 @@ class Sensor(models.Model):
         unique_together = ['node', 'cname']
 
     def __str__(self):
-        return "%s - %s" % (self.node, self.name)
+        return self.name
 
 # Resource
 class Resource(models.Model):
@@ -81,13 +82,22 @@ class Resource(models.Model):
     name = models.CharField(max_length=30)
 
     def __str__(self):
-        return "%s - %s" % (self.node, self.name)
+        return self.name
 
 # Tag
+class TagManager(models.Manager):
+    def get_by_natural_key(self, tag):
+        return self.get(tag=tag)
+
 class Tag(models.Model):
-    tag = models.CharField(max_length=30, unique="True") #forest, mountain, mobile
+    tag = models.CharField(max_length=30, unique="True")
+
+    objects = TagManager()
 
     def __str__(self):
+        return self.tag
+
+    def natural_key(self):
         return self.tag
 
 # Label
