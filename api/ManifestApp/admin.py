@@ -12,11 +12,13 @@ def export_as_json(modeladmin, request, queryset):
     return response
 
 # Register your models here.
+class SensorInline(admin.StackedInline):
+    model = Sensor
+
 class ComputeInline(admin.StackedInline):
     model = Compute
 
-class SensorInline(admin.StackedInline):
-    model = Sensor
+    inlines = [SensorInline]
 
 class ResourceInline(admin.StackedInline):
     model = Resource
@@ -33,11 +35,10 @@ class NodeMetaData(admin.ModelAdmin):
 
     @admin.display(description='Computes')
     def get_computes(self, obj):
-        return ", ".join([c.cname for c in obj.compute.all()])
+        return ", ".join([c.cname for c in obj.computes.all()])
 
     inlines = [
         ComputeInline,
-        SensorInline,
         ResourceInline
     ]
 
