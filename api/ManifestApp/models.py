@@ -9,7 +9,8 @@ class NodeData(models.Model):
     VSN = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
-    computes = models.ManyToManyField("Hardware", through="Compute")
+    computes = models.ManyToManyField("Hardware", through="Compute", related_name='computes')
+    sensors = models.ManyToManyField("Hardware", through="Sensor", related_name='sensors')
     gps_lat = models.FloatField(blank=True)
     gps_lan = models.FloatField(blank=True)
 
@@ -50,9 +51,8 @@ class Compute(models.Model):
         ('zone', 'zone')
     )
 
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE, related_name='compute_nodedata')
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, related_name='compute_cname')
-    sensors = models.ManyToManyField("Hardware", through="Sensor", related_name='compute_sensors')
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30, default='')
     serial_no = models.CharField(max_length=30, default='<MAC ADDRESS>')
     zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
@@ -65,9 +65,8 @@ class Compute(models.Model):
 
 # Sensor
 class Sensor(models.Model):
-    # should change node into compute
-    node = models.ForeignKey(Compute, on_delete=models.CASCADE, related_name='sensor_node')
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, related_name='sensor_cname')
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     labels = models.ManyToManyField("Label", blank=True)
 
