@@ -1,4 +1,5 @@
 # Beekeeper Manifest
+The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
 
 ## Docker-compose
 Make a copy of the `.env.example` environment variables and modify to your needs:
@@ -16,56 +17,15 @@ Make Django migrations:
 docker exec -it manifest-api python manage.py migrate
 ```
 
+* After migrating data tables, run the following command to start your Django server.
+```
+docker exec -it manifest-api python manage.py runserver
+```
+
 Create superuser to login to `/admin/` page:
 ```
 docker exec -it manifest-api python manage.py createsuperuser
 ```
 The last command will prompt you for the admin username and password.
 
-## Setup Django Applicatin
-The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
-
-* If you don't have a MySQL server on your computer yet, please follow the [official documentation](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing) to install.
-
-* Enter the following command at the command line terminal to login with your superuser account `root`
-
-```
-mysql -u root -p
-```
-
-* Create a database `manifest_db` on your MySQL server then switch to it.
-```
-CREATE DATABASE manifest_db;
-USE manifest_db;
-```
-* Tp link this Django project with your MySQL server, go to `DjangoManifest/settings.py`, replace the section `DATABASES` with your database information.
-
-```
-DATABASES = {
-
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'manifest_db',
-        'USER': 'root',
-        'PASSWORD': '<your password>',
-        'HOST': '127.0.0.1',
-        'PORT': '3306'
-    }
-}
-```
-
-* To create the database tables that we're going to use, first create a fork then clone your repository. Enter python terminal with command
-
-```
-python3
-```
-then run the following to migrate data models defined in `ManifestApp/models.py` to your database.
-```
-python3 manage.py makemigrations
-python3 manage.py migrate
-```
-
-* After migrating data tables, run the following command to start your Django server.
-```
-python3 manage.py runserver
-```
+* Your Django server will run on `http://0.0.0.0:8000/`. Head over to your browser and enter `http://0.0.0.0:8000/admin` to access the admin page. Enter the account and password you created at the last step to log in.
