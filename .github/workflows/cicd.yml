@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  job1:
+    name: Build and test docker images
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and run services
+        run: docker-compose up -d --build
+      - name: Wait for docker-compose services
+        run: while [ $(curl -s http://0.0.0.0:8000/ManifestApp/)_ != "SAGE Beekeeper-Manifest_"  ] ; do echo waiting... ; sleep 2 ; done
+      - name: Clean up services
+        run: docker-compose down --volumes
