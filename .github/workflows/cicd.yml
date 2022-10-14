@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build and run services
-        run: docker-compose up -d --build
+        run:  docker-compose --env-file .env.example up --build -d
       - name: Wait for docker-compose services
         run: while [ $(curl -s http://0.0.0.0:8000/ManifestApp/)_ != "SAGE Beekeeper-Manifest_"  ] ; do echo waiting... ; sleep 2 ; done
       - name: Clean up services
