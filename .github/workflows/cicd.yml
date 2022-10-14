@@ -17,4 +17,4 @@ jobs:
       - name: Wait for docker-compose services
         run: while [ $(curl -s http://0.0.0.0:8000/ManifestApp/)_ != "SAGE Beekeeper-Manifest_"  ] ; do echo waiting... ; sleep 2 ; done
       - name: Clean up services
-        run: docker-compose down --volumes
+        run: docker-compose --env-file .env.example down --volumes
