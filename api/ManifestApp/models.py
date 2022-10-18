@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as geo_models
 
 
 # Create your models here.
@@ -11,8 +12,7 @@ class NodeData(models.Model):
     tags = models.ManyToManyField("Tag")
     computes = models.ManyToManyField("Hardware", through="Compute", related_name='computes')
     sensors = models.ManyToManyField("Hardware", through="Sensor", related_name='sensors')
-    gps_lat = models.FloatField(blank=True)
-    gps_lan = models.FloatField(blank=True)
+    location = geo_models.PointField(srid=4326)
 
     def __str__(self):
          return self.VSN
