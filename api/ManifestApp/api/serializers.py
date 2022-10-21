@@ -1,6 +1,6 @@
 from dataclasses import field, fields
 from statistics import mode
-from .models import *
+from ..models import *
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 

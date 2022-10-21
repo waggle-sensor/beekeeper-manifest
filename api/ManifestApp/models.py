@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 
 
@@ -47,8 +48,7 @@ class Compute(models.Model):
 
     ZONE_CHOICES = (
         ('core','core'),
-        ('detector', 'detector'),
-        ('zone', 'zone')
+        ('detector', 'detector')
     )
 
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
@@ -57,9 +57,6 @@ class Compute(models.Model):
     serial_no = models.CharField(max_length=30, default='<MAC ADDRESS>')
     zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
 
-    class Meta:
-        unique_together = ['node', 'cname']
-
     def __str__(self):
         return self.name
 
@@ -67,6 +64,7 @@ class Compute(models.Model):
 class Sensor(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
+    scope = models.ForeignKey(Compute, on_delete=models.CASCADE, default="global")
     name = models.CharField(max_length=30)
     labels = models.ManyToManyField("Label", blank=True)
 
