@@ -3,7 +3,7 @@ from rest_framework import routers
 from . import views, models
 
 router = routers.DefaultRouter()
-router.register(r'nodes', views.NodeViewSet)
+router.register(r'nodes', views.NodeViewSet, basename="nodes")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

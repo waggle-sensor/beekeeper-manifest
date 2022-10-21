@@ -10,8 +10,7 @@ class NodeData(models.Model):
     VSN = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
-    computes = models.ManyToManyField("Hardware", through="Compute", related_name='computes')
-    sensors = models.ManyToManyField("Hardware", through="Sensor", related_name='sensors')
+    computes = models.ManyToManyField("Hardware", through="Compute", related_name="computes")
     gps_lat = models.FloatField(blank=True)
     gps_lan = models.FloatField(blank=True)
 
@@ -25,7 +24,7 @@ class Hardware(models.Model):
     hw_model = models.CharField(max_length=30, blank=True)
     hw_version = models.CharField(max_length=30, blank=True)
     sw_version = models.CharField(max_length=30, blank=True)
-    datasheet = models.CharField(max_length=30, default='<url>', blank=True)
+    datasheet = models.CharField(max_length=30, default="<url>", blank=True)
     cpu = models.CharField(max_length=30, blank=True)
     cpu_ram = models.CharField(max_length=30, blank=True)
     gpu_ram = models.CharField(max_length=30, blank=True)
@@ -47,29 +46,35 @@ class Capability(models.Model):
 class Compute(models.Model):
 
     ZONE_CHOICES = (
-        ('core','core'),
-        ('detector', 'detector')
+        ("core", "core"),
+        ("agent", "agent"),
+        ("detector", "detector")
     )
 
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, default='')
-    serial_no = models.CharField(max_length=30, default='<MAC ADDRESS>')
+    name = models.CharField(max_length=30, default="")
+    serial_no = models.CharField(max_length=30, default="<MAC ADDRESS>")
     zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
 
     def __str__(self):
         return self.name
 
 # Sensor
-class Sensor(models.Model):
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+class CommonSensor(models.Model):
     cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    scope = models.ForeignKey(Compute, on_delete=models.CASCADE, default="global")
     name = models.CharField(max_length=30)
     labels = models.ManyToManyField("Label", blank=True)
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        abstract = True
+
+class NodeSensor(CommonSensor):
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
+    scope = models.CharField(max_length=30, default="global")
+
+class ComputeSensor(CommonSensor):
+    scope = models.ForeignKey(Compute, on_delete=models.CASCADE)
 
 # Resource
 class Resource(models.Model):
