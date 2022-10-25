@@ -27,6 +27,10 @@ class ComputeInline(NestedStackedInline):
     fk_name = 'node'
     inlines = [ComputeSensorInline]
 
+class NodeSensorInline(NestedStackedInline):
+    model = NodeSensor
+    fk_name = 'node'
+
 class NodeMetaData(NestedModelAdmin):
     actions = [export_as_json]
 
@@ -42,6 +46,7 @@ class NodeMetaData(NestedModelAdmin):
         return ", ".join([c.cname for c in obj.computes.all()])
 
     inlines = [
+        NodeSensorInline,
         ResourceInline,
         ComputeInline
     ]
