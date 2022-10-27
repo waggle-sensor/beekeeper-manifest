@@ -6,5 +6,5 @@ from .api.serializers import NodeSerializer
 
 class NodeList(ListCreateAPIView):
 
-    queryset = NodeData.objects.all()
+    queryset = NodeData.objects.all().order_by("VSN")
     serializer_class = NodeSerializer

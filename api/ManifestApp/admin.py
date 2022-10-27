@@ -13,8 +13,9 @@ def export_as_json(modeladmin, request, queryset):
     return response
 
 # Register your models here.
-class ResourceInline(admin.StackedInline):
+class ResourceInline(NestedStackedInline):
     model = Resource
+    fk_name = 'node'
 
 class ComputeSensorInline(NestedStackedInline):
     model = ComputeSensor
