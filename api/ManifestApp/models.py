@@ -1,6 +1,7 @@
 from email.policy import default
 import resource
 from django.db import models
+from django.contrib.gis.db import models as geo_models
 
 
 # Create your models here.
@@ -15,6 +16,7 @@ class NodeData(models.Model):
     resources = models.ManyToManyField("Hardware", through="Resource", related_name="resources")
     gps_lat = models.FloatField(blank=True)
     gps_lan = models.FloatField(blank=True)
+
 
     def __str__(self):
          return self.VSN
