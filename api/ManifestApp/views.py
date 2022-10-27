@@ -1,14 +1,12 @@
 from django.contrib.auth.models import *
 from .models import *
-from rest_framework import viewsets
-from .serializers import NodeSerializer
-from django.http import HttpResponse
+from rest_framework.generics import ListCreateAPIView
+from .api.serializers import NodeSerializer
 
 def index(request):
     return HttpResponse('SAGE Beekeeper-Manifest')
 
-class NodeViewSet(viewsets.ModelViewSet):
+class NodeList(ListCreateAPIView):
 
-    # API endpoint that allows nodes to be viewed or edited.
-    queryset = NodeData.objects.all().order_by('VSN')
+    queryset = NodeData.objects.all().order_by("VSN")
     serializer_class = NodeSerializer

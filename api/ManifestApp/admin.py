@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import *
 from django.core import serializers
 from django.http import HttpResponse
+from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 
 # admin page actions
 @admin.action(description='Export as JSON')
@@ -12,18 +13,26 @@ def export_as_json(modeladmin, request, queryset):
     return response
 
 # Register your models here.
-class SensorInline(admin.StackedInline):
-    model = Sensor
-
-class ComputeInline(admin.StackedInline):
-    model = Compute
-
-    inlines = [SensorInline]
-
-class ResourceInline(admin.StackedInline):
+class ResourceInline(NestedStackedInline):
     model = Resource
+    fk_name = 'node'
 
-class NodeMetaData(admin.ModelAdmin):
+class ComputeSensorInline(NestedStackedInline):
+    model = ComputeSensor
+    extra = 1
+    fk_name = 'scope'
+
+class ComputeInline(NestedStackedInline):
+    model = Compute
+    extra = 1
+    fk_name = 'node'
+    inlines = [ComputeSensorInline]
+
+class NodeSensorInline(NestedStackedInline):
+    model = NodeSensor
+    fk_name = 'node'
+
+class NodeMetaData(NestedModelAdmin):
     actions = [export_as_json]
 
     # display in admin panel
@@ -38,9 +47,11 @@ class NodeMetaData(admin.ModelAdmin):
         return ", ".join([c.cname for c in obj.computes.all()])
 
     inlines = [
-        ComputeInline,
-        ResourceInline
+        NodeSensorInline,
+        ResourceInline,
+        ComputeInline
     ]
+
 
 admin.site.register(NodeData, NodeMetaData)
 admin.site.register(Label)

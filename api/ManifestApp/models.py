@@ -1,3 +1,5 @@
+from email.policy import default
+import resource
 from django.db import models
 from django.contrib.gis.db import models as geo_models
 
@@ -10,9 +12,11 @@ class NodeData(models.Model):
     VSN = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
-    computes = models.ManyToManyField("Hardware", through="Compute", related_name='computes')
-    sensors = models.ManyToManyField("Hardware", through="Sensor", related_name='sensors')
-    location = geo_models.PointField(srid=4326)
+    computes = models.ManyToManyField("Hardware", through="Compute", related_name="computes")
+    resources = models.ManyToManyField("Hardware", through="Resource", related_name="resources")
+    gps_lat = models.FloatField(blank=True)
+    gps_lan = models.FloatField(blank=True)
+
 
     def __str__(self):
          return self.VSN
@@ -24,7 +28,7 @@ class Hardware(models.Model):
     hw_model = models.CharField(max_length=30, blank=True)
     hw_version = models.CharField(max_length=30, blank=True)
     sw_version = models.CharField(max_length=30, blank=True)
-    datasheet = models.CharField(max_length=30, default='<url>', blank=True)
+    datasheet = models.CharField(max_length=30, default="<url>", blank=True)
     cpu = models.CharField(max_length=30, blank=True)
     cpu_ram = models.CharField(max_length=30, blank=True)
     gpu_ram = models.CharField(max_length=30, blank=True)
@@ -46,38 +50,41 @@ class Capability(models.Model):
 class Compute(models.Model):
 
     ZONE_CHOICES = (
-        ('core','core'),
-        ('detector', 'detector'),
-        ('zone', 'zone')
+        ("core", "core"),
+        ("agent", "agent"),
+        ("detector", "detector")
     )
 
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, default='')
-    serial_no = models.CharField(max_length=30, default='<MAC ADDRESS>')
-    zone = models.CharField(max_length=30, choices=ZONE_CHOICES)
-
-    class Meta:
-        unique_together = ['node', 'cname']
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    name = models.CharField(max_length=30, default="", blank=True)
+    serial_no = models.CharField(max_length=30, default="<MAC ADDRESS>", blank=True)
+    zone = models.CharField(max_length=30, choices=ZONE_CHOICES, blank=True)
 
     def __str__(self):
         return self.name
 
 # Sensor
-class Sensor(models.Model):
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
+class CommonSensor(models.Model):
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    name = models.CharField(max_length=30, blank=True)
     labels = models.ManyToManyField("Label", blank=True)
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        abstract = True
+
+class NodeSensor(CommonSensor):
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
+    scope = models.CharField(max_length=30, default="global", blank=True)
+
+class ComputeSensor(CommonSensor):
+    scope = models.ForeignKey(Compute, on_delete=models.CASCADE, blank=True)
 
 # Resource
 class Resource(models.Model):
-    node = models.ForeignKey(NodeData, on_delete=models.CASCADE)
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
+    node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
+    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    name = models.CharField(max_length=30, blank=True)
 
     def __str__(self):
         return self.name
