@@ -24,7 +24,7 @@ class NodeData(models.Model):
 # Hardware
 class Hardware(models.Model):
 
-    cname = models.CharField(max_length=30)
+    hardware = models.CharField(max_length=30)
     hw_model = models.CharField(max_length=30, blank=True)
     hw_version = models.CharField(max_length=30, blank=True)
     sw_version = models.CharField(max_length=30, blank=True)
@@ -36,7 +36,7 @@ class Hardware(models.Model):
     capabilities = models.ManyToManyField("Capability", blank=True)
 
     def __str__(self):
-         return self.cname
+         return self.hardware
 
 # Capability
 class Capability(models.Model):
@@ -56,7 +56,7 @@ class Compute(models.Model):
     )
 
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    hardware = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=30, default="", blank=True)
     serial_no = models.CharField(max_length=30, default="<MAC ADDRESS>", blank=True)
     zone = models.CharField(max_length=30, choices=ZONE_CHOICES, blank=True)
@@ -66,7 +66,7 @@ class Compute(models.Model):
 
 # Sensor
 class CommonSensor(models.Model):
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    hardware = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=30, blank=True)
     labels = models.ManyToManyField("Label", blank=True)
 
@@ -83,7 +83,7 @@ class ComputeSensor(CommonSensor):
 # Resource
 class Resource(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
-    cname = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
+    hardware = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=30, blank=True)
 
     def __str__(self):

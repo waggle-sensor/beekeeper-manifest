@@ -44,7 +44,7 @@ class NodeMetaData(NestedModelAdmin):
 
     @admin.display(description='Computes')
     def get_computes(self, obj):
-        return ", ".join([c.cname for c in obj.computes.all()])
+        return ", ".join([c.hardware for c in obj.computes.all()])
 
     inlines = [
         NodeSensorInline,
