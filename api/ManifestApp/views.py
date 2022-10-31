@@ -2,6 +2,7 @@ from django.contrib.auth.models import *
 from .models import *
 from rest_framework.generics import ListCreateAPIView
 from .api.serializers import NodeSerializer
+from django.http import HttpResponse
 
 def index(request):
     return HttpResponse('SAGE Beekeeper-Manifest')
