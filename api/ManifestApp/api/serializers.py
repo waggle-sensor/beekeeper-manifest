@@ -5,19 +5,20 @@ from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 
-class HardwareSerializer(serializers.ModelSerializer):
-    capabilities = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Hardware
-        fields = ('hardware', 'hw_model', 'hw_version', 'sw_version', 'datasheet', 'cpu', 'cpu_ram', 'gpu_ram', 'shared_ram', 'capabilities', )
-
 class NodeSerializer(WritableNestedModelSerializer):
     computes = serializers.SerializerMethodField("get_computes")
     resources = serializers.SerializerMethodField("get_resources")
-    tags = serializers.StringRelatedField(many=True)
+    tags = serializers.SerializerMethodField("get_tags")
     sensors = serializers.SerializerMethodField("get_sensors")
 
+    def get_tags(self, obj):
+        tobj = obj.tags.all()
+        tags = []
+
+        for t in tobj:
+            tags.append(t.tag)
+
+        return tags
 
     def get_computes(self, obj):
         node_id = [obj.id]
@@ -29,8 +30,9 @@ class NodeSerializer(WritableNestedModelSerializer):
 
         for c in compute_obj:
             compute_dict = defaultdict()
-            compute_dict["hardware"] = defaultdict()
+            compute_dict["hardware"] = defaultdict(list)
             h = Hardware.objects.get(hardware=c.hardware)
+            cap_obj = h.capabilities.all()
 
             compute_dict["name"] = c.name
             compute_dict["serial_no"] = c.serial_no
@@ -44,7 +46,7 @@ class NodeSerializer(WritableNestedModelSerializer):
             compute_dict["hardware"]["cpu_ram"] = h.cpu_ram
             compute_dict["hardware"]["gpu_ram"] = h.gpu_ram
             compute_dict["hardware"]["shared_ram"] = h.shared_ram
-            compute_dict["hardware"]["capabilities"] = ["TODO"]
+            compute_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
 
             compute.append(compute_dict)
 
@@ -66,12 +68,14 @@ class NodeSerializer(WritableNestedModelSerializer):
 
         for s_o in sensor_obj:
             sensor_dict = defaultdict()
-            sensor_dict["hardware"] = defaultdict()
+            sensor_dict["hardware"] = defaultdict(list)
             h = Hardware.objects.get(hardware=s_o.hardware)
+            cap_obj = h.capabilities.all()
+            lab_obj = s_o.labels.all()
 
             sensor_dict["name"] = s_o.name
             sensor_dict["scope"] = str(s_o.scope)
-            sensor_dict["labels"] = "TODO"
+            sensor_dict["labels"] = [l.label for l in lab_obj]
             sensor_dict["hardware"]["hardware"] = h.hardware
             sensor_dict["hardware"]["hw_model"] = h.hw_model
             sensor_dict["hardware"]["hw_version"] = h.hw_version
@@ -81,13 +85,11 @@ class NodeSerializer(WritableNestedModelSerializer):
             sensor_dict["hardware"]["cpu_ram"] = h.cpu_ram
             sensor_dict["hardware"]["gpu_ram"] = h.gpu_ram
             sensor_dict["hardware"]["shared_ram"] = h.shared_ram
-            sensor_dict["hardware"]["capabilities"] = ["TODO"]
+            sensor_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
 
             sensor.append(sensor_dict)
 
-
         return sensor
-
 
     def get_resources(self, obj):
         node_id = [obj.id]
@@ -99,8 +101,9 @@ class NodeSerializer(WritableNestedModelSerializer):
 
         for r in resource_obj:
             resource_dict = defaultdict()
-            resource_dict["hardware"] = defaultdict()
+            resource_dict["hardware"] = defaultdict(list)
             h = Hardware.objects.get(hardware=r.hardware)
+            cap_obj = h.capabilities.all()
 
             resource_dict["name"] = r.name
             resource_dict["hardware"]["hardware"] = h.hardware
@@ -112,13 +115,11 @@ class NodeSerializer(WritableNestedModelSerializer):
             resource_dict["hardware"]["cpu_ram"] = h.cpu_ram
             resource_dict["hardware"]["gpu_ram"] = h.gpu_ram
             resource_dict["hardware"]["shared_ram"] = h.shared_ram
-            resource_dict["hardware"]["capabilities"] = ["TODO"]
+            resource_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
 
             resource.append(resource_dict)
 
         return resource
-
-
 
     class Meta:
         model = NodeData

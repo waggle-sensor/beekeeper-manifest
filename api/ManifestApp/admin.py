@@ -47,9 +47,9 @@ class NodeMetaData(NestedModelAdmin):
         return ", ".join([c.hardware for c in obj.computes.all()])
 
     inlines = [
+        ComputeInline,
         NodeSensorInline,
-        ResourceInline,
-        ComputeInline
+        ResourceInline
     ]
 
 
