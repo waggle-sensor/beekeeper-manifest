@@ -7,17 +7,8 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 class NodeSerializer(WritableNestedModelSerializer):
     computes = serializers.SerializerMethodField("get_computes")
     resources = serializers.SerializerMethodField("get_resources")
-    tags = serializers.SerializerMethodField("get_tags")
+    tags = serializers.StringRelatedField(many=True)
     sensors = serializers.SerializerMethodField("get_sensors")
-
-    def get_tags(self, obj):
-        t_obj = obj.tags.all()
-        tags = []
-
-        for t_o in t_obj:
-            tags.append(t_o.tag)
-
-        return tags
 
     def get_computes(self, obj):
         node = obj.id
@@ -54,7 +45,8 @@ class NodeSerializer(WritableNestedModelSerializer):
         compute_id = []
         sensor_obj = []
         sensor = []
-        # collect sensors from NodeSensor & ComputeSensor
+
+        # collect sensors from NodeSensor & ComputeSensor(needs to collect Computes first)
         compute_id.extend(c.id for c in Compute.objects.filter(node__id=node))
         sensor_obj.extend(s for s in NodeSensor.objects.filter(node__id=node))
 

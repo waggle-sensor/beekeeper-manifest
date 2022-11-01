@@ -11,3 +11,9 @@ class NodeList(ListCreateAPIView):
 
     queryset = NodeData.objects.all().order_by("VSN")
     serializer_class = NodeSerializer
+
+    def get_queryset(self):
+        queryset = NodeData.objects.all().order_by("VSN")
+        if 'VSN' in self.request.GET:
+            return queryset.filter(VSN=self.request.GET['VSN'])
+        return queryset
