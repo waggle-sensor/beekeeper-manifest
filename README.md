@@ -14,13 +14,10 @@ docker-compose up --build
 
 Make Django migrations:
 ```
+docker exec -it manifest-api python manage.py makemigrations
 docker exec -it manifest-api python manage.py migrate
 ```
 
-* After migrating data tables, run the following command to start your Django server.
-```
-docker exec -it manifest-api python manage.py runserver
-```
 
 Create superuser to login to `/admin/` page:
 ```
@@ -29,3 +26,6 @@ docker exec -it manifest-api python manage.py createsuperuser
 The last command will prompt you for the admin username and password.
 
 * Your Django server will run on `http://0.0.0.0:8000/`. Head over to your browser and enter `http://0.0.0.0:8000/admin` to access the admin page. Enter the account and password you created at the last step to log in.
+
+## Initialize Sage node and sensor data
+The purpose of the initialization process is to be easily load data into BK-Manifest and allow developers to easily standup their own instance of BK-Manifest based on their own node's metadata.
