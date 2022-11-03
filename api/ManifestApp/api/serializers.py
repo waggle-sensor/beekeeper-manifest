@@ -1,4 +1,3 @@
-from dataclasses import fields
 from ..models import *
 from collections import defaultdict
 from rest_framework import serializers
@@ -8,25 +7,14 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 class NodeSerializer(WritableNestedModelSerializer):
     computes = serializers.SerializerMethodField("get_computes")
     resources = serializers.SerializerMethodField("get_resources")
-    tags = serializers.SerializerMethodField("get_tags")
+    tags = serializers.StringRelatedField(many=True)
     sensors = serializers.SerializerMethodField("get_sensors")
 
-    def get_tags(self, obj):
-        tobj = obj.tags.all()
-        tags = []
-
-        for t in tobj:
-            tags.append(t.tag)
-
-        return tags
-
     def get_computes(self, obj):
-        node_id = [obj.id]
+        node = obj.id
         compute = []
         compute_obj = []
-
-        for n in node_id:
-            compute_obj.extend(c for c in Compute.objects.filter(node__id=n))
+        compute_obj.extend(c for c in Compute.objects.filter(node__id=node))
 
         for c in compute_obj:
             compute_dict = defaultdict()
@@ -46,22 +34,21 @@ class NodeSerializer(WritableNestedModelSerializer):
             compute_dict["hardware"]["cpu_ram"] = h.cpu_ram
             compute_dict["hardware"]["gpu_ram"] = h.gpu_ram
             compute_dict["hardware"]["shared_ram"] = h.shared_ram
-            compute_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
+            compute_dict["hardware"]["capabilities"] = [cap.capability for cap in cap_obj]
 
             compute.append(compute_dict)
 
         return compute
 
     def get_sensors(self, obj):
-        node_id = [obj.id]
+        node = obj.id
         compute_id = []
         sensor_obj = []
         sensor = []
 
-        # collect sensors from NodeSensor & ComputeSensor
-        for n in node_id:
-            compute_id.extend(c.id for c in Compute.objects.filter(node__id=n))
-            sensor_obj.extend(s for s in NodeSensor.objects.filter(node__id=n))
+        # collect sensors from NodeSensor & ComputeSensor(needs to collect Computes first)
+        compute_id.extend(c.id for c in Compute.objects.filter(node__id=node))
+        sensor_obj.extend(s for s in NodeSensor.objects.filter(node__id=node))
 
         for c in compute_id:
             sensor_obj.extend(s for s in ComputeSensor.objects.filter(scope__id=c))
@@ -85,19 +72,18 @@ class NodeSerializer(WritableNestedModelSerializer):
             sensor_dict["hardware"]["cpu_ram"] = h.cpu_ram
             sensor_dict["hardware"]["gpu_ram"] = h.gpu_ram
             sensor_dict["hardware"]["shared_ram"] = h.shared_ram
-            sensor_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
+            sensor_dict["hardware"]["capabilities"] = [cap.capability for cap in cap_obj]
 
             sensor.append(sensor_dict)
 
         return sensor
 
     def get_resources(self, obj):
-        node_id = [obj.id]
+        node = obj.id
         resource = []
         resource_obj = []
 
-        for n in node_id:
-            resource_obj.extend(r for r in Resource.objects.filter(node__id=n))
+        resource_obj.extend(r for r in Resource.objects.filter(node__id=node))
 
         for r in resource_obj:
             resource_dict = defaultdict()
@@ -115,7 +101,7 @@ class NodeSerializer(WritableNestedModelSerializer):
             resource_dict["hardware"]["cpu_ram"] = h.cpu_ram
             resource_dict["hardware"]["gpu_ram"] = h.gpu_ram
             resource_dict["hardware"]["shared_ram"] = h.shared_ram
-            resource_dict["hardware"]["capabilities"] = [c.capability for c in cap_obj]
+            resource_dict["hardware"]["capabilities"] = [cap.capability for cap in cap_obj]
 
             resource.append(resource_dict)
 
