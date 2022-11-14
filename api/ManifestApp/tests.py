@@ -11,8 +11,7 @@ class NodeTest(TestCase):
         self.Node = NodeData.objects.create(VSN="A", name="A_name", gps_lat=50.00, gps_lan=50.00)
 
         tag1 = Tag.objects.create(tag="t1")
-        tag2 = Tag.objects.create(tag="t2")
-        self.Node.tags.set([tag1.pk, tag2.pk])
+        self.Node.tags.set([tag1.pk])
 
         compute1 = Hardware.objects.create(hardware="h1")
         self.Node.computes.set([compute1.pk])
@@ -23,7 +22,7 @@ class NodeTest(TestCase):
 
     def test_node_has_a_tag(self):
         N = self.Node
-        self.assertEqual(N.tags.count(), 2)
+        self.assertEqual(N.tags.count(), 1)
 
     def test_node_has_a_compute(self):
         N = self.Node
