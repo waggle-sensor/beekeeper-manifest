@@ -1,7 +1,6 @@
 from email.policy import default
-import resource
 from django.db import models
-from django.contrib.gis.db import models as geo_models
+# from django.contrib.gis.db import models as geo_models
 
 
 # Create your models here.
