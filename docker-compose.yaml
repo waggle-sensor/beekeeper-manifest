@@ -1,21 +1,34 @@
 version: "3.7"
 services:
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - 127.0.0.1:8000:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static-root:/var/www/static:ro
+
   api:
     build:
       context: api
       dockerfile: Dockerfile
     container_name: manifest-api
     image: manifest-api
-    command: python manage.py runserver 0.0.0.0:$API_PORT
+    restart: always
+    command: gunicorn DjangoManifest.wsgi:application --bind 0.0.0.0:80 --reload
     volumes:
-      - ${PWD}/api/:/usr/src/app/
+      - ${PWD}/api/:/app/
+      - static-root:/var/www/static:rw
     environment:
+      - "DJANGO_SETTINGS_MODULE=config.settings.prod"
       - SQL_ENGINE
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - POSTGRES_HOST
-      - POSTGRES_PORT
+      - DATABASE_BACKEND
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_NAME
       - DEBUG
       - DJANGO_ALLOWED_HOSTS
       - API_PORT
@@ -44,3 +57,4 @@ services:
 
 volumes:
   postgres_data:
+  static-root:
