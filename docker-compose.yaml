@@ -21,7 +21,7 @@ services:
       - ${PWD}/api/:/app/
       - static-root:/var/www/static:rw
     environment:
-      - "DJANGO_SETTINGS_MODULE=config.settings.prod"
+      - "DJANGO_SETTINGS_MODULE=DjangoManifest.settings.prod"
       - SQL_ENGINE
       - DATABASE_BACKEND
       - DATABASE_HOST
