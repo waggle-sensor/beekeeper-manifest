@@ -41,7 +41,7 @@ docker exec -it manifest-api python manage.py dumpdata
 ```
 
 Transform the data to the current schema:
-- Currently there is a [notebook](/docs/create_fixtures.ipynb) that takes in a modified production google sheet and converts it to the format that is needed for `loaddata`
+- Currently there is a [notebook](/docs/create_fixtures.ipynb) that takes in a modified production google sheet and converts it to the format that is needed for `loaddata`. The modified production google sheet is not provided in this repository.
 
 Initialize data:
 ```
