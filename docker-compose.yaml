@@ -9,6 +9,13 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - static-root:/var/www/static:ro
 
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=waggle"
+      - "MYSQL_DATABASE=waggle"
+
   api:
     build:
       context: api
@@ -18,43 +25,20 @@ services:
     restart: always
     command: gunicorn DjangoManifest.wsgi:application --bind 0.0.0.0:80 --reload
     volumes:
-      - ${PWD}/api/:/app/
+      - ${PWD}/api/:/app:ro
       - static-root:/var/www/static:rw
     environment:
+      # Django settings
       - "DJANGO_SETTINGS_MODULE=DjangoManifest.settings.prod"
-      - SQL_ENGINE
-      - DATABASE_BACKEND
-      - DATABASE_HOST
-      - DATABASE_PORT
-      - DATABASE_USER
-      - DATABASE_PASSWORD
-      - DATABASE_NAME
-      - DEBUG
-      - DJANGO_ALLOWED_HOSTS
-      - API_PORT
-    depends_on:
-        postgres:
-          condition: service_healthy
-    ports:
-      - $API_PORT:$API_PORT
-
-  postgres:
-    image: postgres:13.3-alpine
-    container_name: manifest-db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-      - ${PWD}/db/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - ADMIN_USERNAME
-      - ADMIN_PASSWORD
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
-      timeout: 20s
-      retries: 10
+      - "SECRET_KEY=django-insecure-$!4^oa&ws#nes5lo@y#7ljtsj_l+sau34a(8qb&cy-&8%gd-fp"
+      - "ALLOWED_HOSTS=localhost 127.0.0.1"
+      - "CSRF_TRUSTED_ORIGINS=http://localhost http://127.0.0.1"
+      - "DATABASE_BACKEND=django.db.backends.mysql"
+      - "DATABASE_HOST=mysql"
+      # NOTE(sean) we use the root user to allow django to setup / teardown test databases.
+      - "DATABASE_USER=root"
+      - "DATABASE_PASSWORD=waggle"
+      - "DATABASE_NAME=waggle"
 
 volumes:
-  postgres_data:
   static-root:
