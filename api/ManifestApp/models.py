@@ -9,7 +9,7 @@ from django.contrib.gis.db import models as geo_models
 # NodeData
 class NodeData(models.Model):
 
-    VSN = models.CharField(max_length=30, unique="True")
+    vsn = models.CharField(max_length=30, unique="True")
     name = models.CharField(max_length=30)
     tags = models.ManyToManyField("Tag")
     computes = models.ManyToManyField("Hardware", through="Compute", related_name="computes")
@@ -19,7 +19,7 @@ class NodeData(models.Model):
 
 
     def __str__(self):
-         return self.VSN
+         return self.vsn
 
 # Hardware
 class Hardware(models.Model):

@@ -109,4 +109,4 @@ class NodeSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = NodeData
-        fields = ('VSN', 'name', 'gps_lat', 'gps_lan', 'tags', 'computes', 'sensors', 'resources', )
+        fields = ('vsn', 'name', 'gps_lat', 'gps_lan', 'tags', 'computes', 'sensors', 'resources', )

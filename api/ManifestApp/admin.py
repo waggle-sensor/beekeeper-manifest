@@ -36,7 +36,7 @@ class NodeMetaData(NestedModelAdmin):
     actions = [export_as_json]
 
     # display in admin panel
-    list_display = ('VSN', 'name','gps_lat', 'gps_lan', 'get_tags', 'get_computes')
+    list_display = ('vsn', 'name','gps_lat', 'gps_lan', 'get_tags', 'get_computes')
 
     @admin.display(description='Tags')
     def get_tags(self, obj):

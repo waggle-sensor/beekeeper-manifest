@@ -9,12 +9,12 @@ def index(request):
 
 
 class NodeList(ListCreateAPIView):
-    queryset = NodeData.objects.all().order_by("VSN")
+    queryset = NodeData.objects.all().order_by("vsn")
     serializer_class = NodeSerializer
 
 
 class NodeFilterList(RetrieveAPIView):
 
-    queryset = NodeData.objects.all().order_by("VSN")
+    queryset = NodeData.objects.all().order_by("vsn")
     serializer_class = NodeSerializer
-    lookup_field = "VSN"
+    lookup_field = "vsn"
