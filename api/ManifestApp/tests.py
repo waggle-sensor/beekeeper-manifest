@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import *
-from .api.serializers import NodeSerializer
+import json
 
 class HomepageTest(TestCase):
     def test_url_exists_at_correct_location(self):
@@ -17,7 +17,7 @@ class NodeTest(TestCase):
         compute1 = Hardware.objects.create(hardware="h1")
         self.Node.computes.set([compute1.pk])
 
-        self.serializer = NodeSerializer(instance=self.Node)
+        self.response = self.client.get("/ManifestApp/api/nodes/")
 
     def test_node_creation(self):
         N = self.Node
@@ -32,6 +32,6 @@ class NodeTest(TestCase):
         self.assertEqual(N.computes.count(), 1)
 
     def test_contains_expected_fields(self):
-        data = self.serializer.data
+        data = json.loads(self.response.content)
 
-        self.assertEqual(set(data.keys()), set(['VSN', 'name', 'resources', 'sensors', 'gps_lat', 'gps_lan', 'tags', 'computes']))
+        self.assertEqual(data[0].keys(), set(['VSN', 'name', 'resources', 'sensors', 'gps_lat', 'gps_lan', 'tags', 'computes']))
