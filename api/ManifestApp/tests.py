@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import *
+from .api.serializers import NodeSerializer
 
 class HomepageTest(TestCase):
     def test_url_exists_at_correct_location(self):
@@ -16,6 +17,8 @@ class NodeTest(TestCase):
         compute1 = Hardware.objects.create(hardware="h1")
         self.Node.computes.set([compute1.pk])
 
+        self.serializer = NodeSerializer(instance=self.Node)
+
     def test_node_creation(self):
         N = self.Node
         self.assertTrue(isinstance(N, NodeData))
@@ -27,3 +30,8 @@ class NodeTest(TestCase):
     def test_node_has_a_compute(self):
         N = self.Node
         self.assertEqual(N.computes.count(), 1)
+
+    def test_contains_expected_fields(self):
+        data = self.serializer.data
+
+        self.assertEqual(set(data.keys()), set(['VSN', 'name', 'resources', 'sensors', 'gps_lat', 'gps_lan', 'tags', 'computes']))
