@@ -6,7 +6,7 @@ DEBUG = False
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split()
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split()
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = bool(int(os.environ.get("SESSION_COOKIE_SECURE", "1")))
 
 DATABASES = {
     "default": {

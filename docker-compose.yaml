@@ -38,9 +38,14 @@ services:
       - "SECRET_KEY=django-insecure-4DQhs101FK4NgF_PHyEDFyDTze4REhtcHmKiksqO_ztM7vV3Vw"
       - "ALLOWED_HOSTS=localhost 127.0.0.1"
       - "CSRF_TRUSTED_ORIGINS=http://localhost http://127.0.0.1"
+      # NOTE(sean) SESSION_COOKIE_SECURE should never be set to 0 for cluster deployment. It is only
+      # done here to allow session cookies to work without having to setup https for local testing.
+      - "SESSION_COOKIE_SECURE=0"
+
+      # Database settings
       - "DATABASE_BACKEND=django.db.backends.mysql"
       - "DATABASE_HOST=mysql"
-      # NOTE(sean) we use the root user to allow django to setup / teardown test databases.
+      # NOTE(sean) We use the root user to allow django to setup / teardown test databases.
       - "DATABASE_USER=root"
       - "DATABASE_PASSWORD=waggle"
       - "DATABASE_NAME=waggle"
