@@ -7,14 +7,14 @@ on:
     branches: [ main ]
 
 jobs:
-  job1:
+  build_and_test:
     name: Build and test docker images
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Build and run services
-        run:  docker-compose --env-file .env.example up --build -d
-      - name: Wait for docker-compose services
-        run: while [ $(curl -s http://0.0.0.0:8000/ManifestApp/)_ != "SAGE Beekeeper-Manifest_"  ] ; do echo waiting... ; sleep 2 ; done
+      - name: Start services and perform initial setup
+        run:  make start && sleep 10 && make migrate
+      - name: Run tests
+        run: make test
       - name: Clean up services
-        run: docker-compose --env-file .env.example down --volumes
+        run: make stop

@@ -15,6 +15,11 @@ services:
     environment:
       - "MYSQL_ROOT_PASSWORD=waggle"
       - "MYSQL_DATABASE=waggle"
+    healthcheck:
+      test: mysql waggle --user=root --password=waggle --silent --execute "SELECT 1;"
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   api:
     build:
