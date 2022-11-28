@@ -1,18 +1,18 @@
 start:
-	docker-compose up --build -d
+	@docker-compose up --build -d
 
 stop:
-	docker-compose down --volumes
+	@docker-compose down --volumes
 
 migrate:
-	docker-compose exec api python manage.py migrate
+	@docker-compose exec -T api python manage.py migrate
 
 collectstatic:
-	docker-compose exec api python manage.py collectstatic --no-input
+	@docker-compose exec -T api python manage.py collectstatic --no-input
 
 createsuperuser:
-	docker-compose exec api python manage.py createsuperuser
+	@docker-compose exec api python manage.py createsuperuser
 
 test:
-	docker-compose exec api python manage.py test
-	docker-compose exec api python manage.py check --deploy
+	@docker-compose exec -T api python manage.py test
+	@docker-compose exec -T api python manage.py check --deploy
