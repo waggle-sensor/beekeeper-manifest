@@ -12,8 +12,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Start services and perform initial setup
-        run:  make start && sleep 10 && make migrate
+      - name: Start services and wait until ready
+        run:  make start && sleep 10
+      - name: Collect static content
+        run: make collectstatic
+      - name: Run migratations
+        run: make migrate
       - name: Run tests
         run: make test
       - name: Clean up services
