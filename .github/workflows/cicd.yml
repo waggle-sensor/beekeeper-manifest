@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build_and_test:
+  job1:
     name: Build and test docker images
     runs-on: ubuntu-20.04
     steps:
