@@ -1,28 +1,23 @@
-from email.policy import default
 from django.db import models
-# from django.contrib.gis.db import models as geo_models
 
 
-# Create your models here.
-
-# NodeData
 class NodeData(models.Model):
-
-    VSN = models.CharField(max_length=30, unique="True")
+    vsn = models.CharField("VSN", max_length=30, unique="True")
     name = models.CharField(max_length=30)
-    tags = models.ManyToManyField("Tag")
+    tags = models.ManyToManyField("Tag", blank=True)
     computes = models.ManyToManyField("Hardware", through="Compute", related_name="computes")
     resources = models.ManyToManyField("Hardware", through="Resource", related_name="resources")
-    gps_lat = models.FloatField(blank=True)
-    gps_lan = models.FloatField(blank=True)
-
+    gps_lat = models.FloatField("Latitude", blank=True, null=True)
+    gps_lon = models.FloatField("Longitude", blank=True, null=True)
 
     def __str__(self):
-         return self.VSN
+         return self.vsn
 
-# Hardware
+    class Meta:
+        verbose_name_plural = "Nodes"
+
+
 class Hardware(models.Model):
-
     hardware = models.CharField(max_length=30)
     hw_model = models.CharField(max_length=30, blank=True)
     hw_version = models.CharField(max_length=30, blank=True)
@@ -37,15 +32,20 @@ class Hardware(models.Model):
     def __str__(self):
          return self.hardware
 
-# Capability
-class Capability(models.Model):
+    class Meta:
+        verbose_name_plural = "Hardware"
 
+
+class Capability(models.Model):
     capability = models.CharField(max_length=30)
 
     def __str__(self):
          return self.capability
 
-# Compute
+    class Meta:
+        verbose_name_plural = "Capabilities"
+
+
 class Compute(models.Model):
 
     ZONE_CHOICES = (
@@ -63,7 +63,10 @@ class Compute(models.Model):
     def __str__(self):
         return self.name
 
-# Sensor
+    class Meta:
+        verbose_name_plural = "Compute"
+
+
 class CommonSensor(models.Model):
     hardware = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=30, blank=True)
@@ -72,14 +75,16 @@ class CommonSensor(models.Model):
     class Meta:
         abstract = True
 
+
 class NodeSensor(CommonSensor):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
     scope = models.CharField(max_length=30, default="global", blank=True)
 
+
 class ComputeSensor(CommonSensor):
     scope = models.ForeignKey(Compute, on_delete=models.CASCADE, blank=True)
 
-# Resource
+
 class Resource(models.Model):
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
     hardware = models.ForeignKey(Hardware, on_delete=models.CASCADE, blank=True)
@@ -88,15 +93,9 @@ class Resource(models.Model):
     def __str__(self):
         return self.name
 
-# Tag
-class TagManager(models.Manager):
-    def get_by_natural_key(self, tag):
-        return self.get(tag=tag)
 
 class Tag(models.Model):
-    tag = models.CharField(max_length=30, unique="True")
-
-    objects = TagManager()
+    tag = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
         return self.tag
@@ -104,9 +103,12 @@ class Tag(models.Model):
     def natural_key(self):
         return self.tag
 
-# Label
+
 class Label(models.Model):
-    label = models.CharField(max_length=30)
+    label = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
+        return self.label
+
+    def natural_key(self):
         return self.label

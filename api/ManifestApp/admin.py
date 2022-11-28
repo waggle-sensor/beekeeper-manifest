@@ -15,28 +15,35 @@ def export_as_json(modeladmin, request, queryset):
 # Register your models here.
 class ResourceInline(NestedStackedInline):
     model = Resource
+    extra = 0
     fk_name = 'node'
 
 class ComputeSensorInline(NestedStackedInline):
     model = ComputeSensor
-    extra = 1
+    extra = 0
     fk_name = 'scope'
 
 class ComputeInline(NestedStackedInline):
     model = Compute
-    extra = 1
+    extra = 0
     fk_name = 'node'
     inlines = [ComputeSensorInline]
 
 class NodeSensorInline(NestedStackedInline):
     model = NodeSensor
+    extra = 0
     fk_name = 'node'
 
 class NodeMetaData(NestedModelAdmin):
     actions = [export_as_json]
 
     # display in admin panel
-    list_display = ('VSN', 'name','gps_lat', 'gps_lan', 'get_tags', 'get_computes')
+    list_display = ('vsn', 'name','gps_lat', 'gps_lon', 'get_tags', 'get_computes')
+
+    fieldsets = (
+        (None, {"fields": ("vsn", "name", "tags")}),
+        ("Location", {"fields": ("gps_lat", "gps_lon")}),
+    )
 
     @admin.display(description='Tags')
     def get_tags(self, obj):
