@@ -1,46 +1,54 @@
 version: "3.7"
 services:
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - 127.0.0.1:8000:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static-root:/var/www/static:ro
+
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=waggle"
+      - "MYSQL_DATABASE=waggle"
+    healthcheck:
+      test: mysql waggle --user=root --password=waggle --silent --execute "SELECT 1;"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   api:
     build:
       context: api
       dockerfile: Dockerfile
     container_name: manifest-api
     image: manifest-api
-    command: python manage.py runserver 0.0.0.0:$API_PORT
+    restart: always
+    command: gunicorn DjangoManifest.wsgi:application --bind 0.0.0.0:80 --reload
     volumes:
-      - ${PWD}/api/:/usr/src/app/
+      - ${PWD}/api/:/app:ro
+      - static-root:/var/www/static:rw
     environment:
-      - SQL_ENGINE
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - POSTGRES_HOST
-      - POSTGRES_PORT
-      - DEBUG
-      - DJANGO_ALLOWED_HOSTS
-      - API_PORT
-    depends_on:
-        postgres:
-          condition: service_healthy
-    ports:
-      - $API_PORT:$API_PORT
+      # Django settings
+      - "DJANGO_SETTINGS_MODULE=DjangoManifest.settings.prod"
+      - "SECRET_KEY=django-insecure-4DQhs101FK4NgF_PHyEDFyDTze4REhtcHmKiksqO_ztM7vV3Vw"
+      - "ALLOWED_HOSTS=localhost 127.0.0.1"
+      - "CSRF_TRUSTED_ORIGINS=http://localhost http://127.0.0.1"
+      # NOTE(sean) SESSION_COOKIE_SECURE should never be set to 0 for cluster deployment. It is only
+      # done here to allow session cookies to work without having to setup https for local testing.
+      - "SESSION_COOKIE_SECURE=0"
 
-  postgres:
-    image: postgres:13.3-alpine
-    container_name: manifest-db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-      - ${PWD}/db/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - ADMIN_USERNAME
-      - ADMIN_PASSWORD
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
-      timeout: 20s
-      retries: 10
+      # Database settings
+      - "DATABASE_BACKEND=django.db.backends.mysql"
+      - "DATABASE_HOST=mysql"
+      # NOTE(sean) We use the root user to allow django to setup / teardown test databases.
+      - "DATABASE_USER=root"
+      - "DATABASE_PASSWORD=waggle"
+      - "DATABASE_NAME=waggle"
 
 volumes:
-  postgres_data:
+  static-root:

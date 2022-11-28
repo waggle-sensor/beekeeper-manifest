@@ -1,0 +1,9 @@
+Dockerfile
+Makefile
+docker-compose.yaml
+nginx.conf
+**/.*
+**/*.md
+**/*.sqlite3
+**/__pycache__
+**/venv
