@@ -24,6 +24,11 @@ The last command will prompt you for the admin username and password.
 
 Your Django server will run on `http://localhost:8000/`. Head over to your browser and enter `http://localhost:8000/admin` to access the admin page. Enter the account and password you created at the last step to log in.
 
+The manifests APIs are located at:
+
+* Show all manifests: `http://localhost:8000/manifests/`
+* Show node manifest: `http://localhost:8000/manifests/vsn/`
+
 ## Initialize Sage node and sensor data
 
 The purpose of the initialization process is to be easily load data into BK-Manifest and allow developers to easily standup their own instance of BK-Manifest based on their own node's metadata.
