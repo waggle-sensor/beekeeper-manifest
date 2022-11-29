@@ -2,7 +2,7 @@
 
 The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
 
-## Local docker-compose environment
+## Local docker-compose development environment
 
 Start services:
 ```
@@ -11,8 +11,8 @@ make start
 
 Once the services have started, perform database migrations and prep static content:
 ```
-make migrate
 make collectstatic
+make migrate
 ```
 
 If you plan on logging in to the admin page `/admin/`, you'll need to create a superuser:
