@@ -5,7 +5,7 @@ import json
 
 class HomepageTest(TestCase):
     def test_url_exists_at_correct_location(self):
-        response = self.client.get("/ManifestApp/")
+        response = self.client.get("/manifests/")
         self.assertEqual(response.status_code, 200)
 
 
@@ -18,8 +18,6 @@ class ManifestTest(TestCase):
 
         compute1 = Hardware.objects.create(hardware="h1")
         self.Node.computes.set([compute1.pk])
-
-        self.response = self.client.get("/ManifestApp/api/nodes/")
 
     def test_node_creation(self):
         N = self.Node
@@ -34,7 +32,8 @@ class ManifestTest(TestCase):
         self.assertEqual(N.computes.count(), 1)
 
     def test_contains_expected_fields(self):
-        data = json.loads(self.response.content)
+        r = self.client.get("/manifests/")
+        data = json.loads(r.content)
         self.assertEqual(data[0].keys(), set(['vsn', 'name', 'resources', 'sensors', 'gps_lat', 'gps_lon', 'tags', 'computes']))
 
     def test_get_manifest(self):
@@ -73,7 +72,7 @@ class ManifestTest(TestCase):
             },
         ])
 
-        r = self.client.get("/ManifestApp/api/nodes/W123/")
+        r = self.client.get("/manifests/W123/")
         self.assertEqual(r.status_code, 200)
         manifest = data = r.json()
 
