@@ -18,11 +18,11 @@ class NodeData(models.Model):
 
 
 class Hardware(models.Model):
-    hardware = models.CharField(max_length=30)
+    hardware = models.CharField(max_length=100)
     hw_model = models.CharField(max_length=30, blank=True)
     hw_version = models.CharField(max_length=30, blank=True)
     sw_version = models.CharField(max_length=30, blank=True)
-    datasheet = models.CharField(max_length=30, default="<url>", blank=True)
+    datasheet = models.CharField(max_length=250, default="<url>", blank=True)
     cpu = models.CharField(max_length=30, blank=True)
     cpu_ram = models.CharField(max_length=30, blank=True)
     gpu_ram = models.CharField(max_length=30, blank=True)
@@ -51,7 +51,8 @@ class Compute(models.Model):
     ZONE_CHOICES = (
         ("core", "core"),
         ("agent", "agent"),
-        ("detector", "detector")
+        ("detector", "detector"),
+        ("shield", "shield")
     )
 
     node = models.ForeignKey(NodeData, on_delete=models.CASCADE, blank=True)
