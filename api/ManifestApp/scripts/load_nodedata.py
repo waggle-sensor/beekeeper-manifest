@@ -61,8 +61,6 @@ def run():
                     number = row["top_camera"].split("-")[1][:4]
                     h_str = "sensor-camera-" + camera_type + "-" + number + "-1"
 
-                number = row["top_camera"].split("-")[1][:4]
-                h_str = "sensor-camera-" + camera_type + "-" + number + "-1"
                 if not Hardware.objects.filter(hardware=h_str):
                     Hardware.objects.create(hardware=h_str)
                     print("Created a new hardware: " + h_str)
