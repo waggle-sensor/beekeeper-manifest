@@ -31,7 +31,6 @@ The purpose of the initialization process is to be easily load data into BK-Mani
 To load node and hardware data, create a folder `data` under folder `ManifestApp`. Move `hardware.csv` and `nodedata.csv` under this folder. In the terminal, navigate to `/api/` then execute
 
 ```
-docker-compose exec -T api python manage.py runscript load_nodedata
-
 docker-compose exec -T api python manage.py runscript load_hardware
+docker-compose exec -T api python manage.py runscript load_nodedata
 ```
