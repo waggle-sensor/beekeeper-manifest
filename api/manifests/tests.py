@@ -16,7 +16,7 @@ class ManifestTest(TestCase):
         tag1 = Tag.objects.create(tag="t1")
         self.Node.tags.set([tag1.pk])
 
-        compute1 = Hardware.objects.create(hardware="h1")
+        compute1 = ComputeHardware.objects.create(hardware="h1")
         self.Node.computes.set([compute1.pk])
 
     def test_node_creation(self):
@@ -125,12 +125,12 @@ class ManifestTest(TestCase):
             for compute in manifest["computes"]:
                 compute_obj = Compute.objects.create(
                     node=node_obj,
-                    hardware=Hardware.objects.get(hardware=compute["hardware"]),
+                    hardware=ComputeHardware.objects.get(hardware=compute["hardware"]),
                     name=compute["name"],
                 )
                 for sensor in compute["sensors"]:
                     ComputeSensor.objects.create(
-                        hardware=Hardware.objects.get(hardware=sensor),
+                        hardware=SensorHardware.objects.get(hardware=sensor),
                         scope=compute_obj,
                     )
 

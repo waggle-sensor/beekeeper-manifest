@@ -2,3 +2,4 @@ Django==4.1.1
 djangorestframework
 drf-writable-nested
 django-nested-inline
+django-extensions
