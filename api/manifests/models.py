@@ -23,6 +23,7 @@ class CommonHardware(models.Model):
     hw_version = models.CharField(max_length=30, blank=True)
     sw_version = models.CharField(max_length=30, blank=True)
     datasheet = models.CharField(max_length=250, default="<url>", blank=True)
+    capabilities = models.ManyToManyField("Capability", blank=True)
 
     class Meta:
         abstract = True
@@ -32,7 +33,6 @@ class ComputeHardware(CommonHardware):
     cpu_ram = models.CharField(max_length=30, blank=True)
     gpu_ram = models.CharField(max_length=30, blank=True)
     shared_ram = models.BooleanField(default=False, blank=True)
-    capabilities = models.ManyToManyField("Capability", blank=True)
 
     def __str__(self):
         return self.hardware

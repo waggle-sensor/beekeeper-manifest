@@ -3,7 +3,7 @@ import csv
 
 
 def run():
-    with open('ManifestApp/data/nodedata.csv') as file:
+    with open('manifests/data/nodedata.csv') as file:
         reader = csv.DictReader(file)
 
         # skip the data type row

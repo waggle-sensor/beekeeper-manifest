@@ -2,7 +2,7 @@
 
 The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
 
-## Local docker-compose environment
+## Local docker-compose development environment
 
 Start services:
 ```
@@ -11,8 +11,8 @@ make start
 
 Once the services have started, perform database migrations and prep static content:
 ```
-make migrate
 make collectstatic
+make migrate
 ```
 
 If you plan on logging in to the admin page `/admin/`, you'll need to create a superuser:
@@ -23,6 +23,11 @@ make createsuperuser
 The last command will prompt you for the admin username and password.
 
 Your Django server will run on `http://localhost:8000/`. Head over to your browser and enter `http://localhost:8000/admin` to access the admin page. Enter the account and password you created at the last step to log in.
+
+The manifests APIs are located at:
+
+* Show all manifests: `http://localhost:8000/manifests/`
+* Show node manifest: `http://localhost:8000/manifests/vsn/`
 
 ## Initialize Sage node and sensor data
 
