@@ -37,9 +37,12 @@ class ManifestTest(TestCase):
         self.assertEqual(data[0].keys(), set(['vsn', 'name', 'resources', 'sensors', 'gps_lat', 'gps_lon', 'tags', 'computes']))
 
     def test_get_manifest(self):
-        self.createHardware([
+        self.createComputeHardware([
             {"hardware": "nx1", "hw_model": "Nvidia Jetson Xavier"},
             {"hardware": "rpi4", "hw_model": "Raspberry PI 4"},
+        ])
+
+        self.createSensorHardware([
             {"hardware": "bme280", "hw_model": "BME280"},
             {"hardware": "bme680", "hw_model": "BME680"},
         ])
@@ -105,12 +108,19 @@ class ManifestTest(TestCase):
             ],
         })
 
-    def createHardware(self, hardware):
+    def createComputeHardware(self, hardware):
         """
-        Helper function which populates hardware test data.
+        Helper function which populates compute hardware test data.
         """
         for item in hardware:
-            Hardware.objects.create(hardware=item["hardware"], hw_model=item["hw_model"])
+            ComputeHardware.objects.create(hardware=item["hardware"], hw_model=item["hw_model"])
+
+    def createSensorHardware(self, hardware):
+        """
+        Helper function which populates sensor hardware test data.
+        """
+        for item in hardware:
+            SensorHardware.objects.create(hardware=item["hardware"], hw_model=item["hw_model"])
 
     def createManifests(self, manifests):
         """
