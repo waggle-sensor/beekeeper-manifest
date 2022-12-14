@@ -1,3 +1,5 @@
+# _This repo is archived. See https://github.com/waggle-sensor/waggle-auth-app/tree/main/manifests_
+
 # Beekeeper Manifest
 
 The beekeeper manifest database is used to store the manifests of a node on the ecosystem.
